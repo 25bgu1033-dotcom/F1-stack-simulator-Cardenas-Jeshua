@@ -1,72 +1,124 @@
-
 class Stack {
     constructor() {
         this.items = []
         this.count = 0
-         
     }
 
-    // Add element to top of stack
     push(element) {
         this.items[this.count] = element
-        let push_res=`${element}`; //console.log(`added to ${this.count}`);
-        this.count += 1;
-        let count=this.count -1;
-        //return [push_res,count];
-        return [push_res, count];
+        this.count += 1
+        return this.count - 1
     }
 
-    // Return and remove top element in stack
-    // Return undefined if stack is empty
     pop() {
-        if(this.count == 0) return undefined
-        let deleteItem = this.items[this.count - 1]
+        if (this.count === 0) return undefined
+        const removed = this.items[this.count - 1]
+        this.items.length = this.count - 1
         this.count -= 1
-        console.log(`${deleteItem} removed`)
-        return deleteItem
+        return removed
     }
 
-    // Check top element in stack
     peek() {
-        console.log(`Top element is ${this.items[this.count - 1]}`)
+        if (this.count === 0) return undefined
         return this.items[this.count - 1]
     }
 
-    // Check if stack is empty
     isEmpty() {
-        console.log(this.count == 0 ? 'Stack is empty' : 'Stack is NOT empty')
-        return this.count == 0
+        return this.count === 0
     }
 
-    // Check size of stack
     size() {
-        console.log(`${this.count} elements in stack`)
         return this.count
     }
 
-    // Print elements in stack
     print() {
-        let str = ''
-        for(let i = 0; i < this.count; i++) {
-            str += this.items[i] + ' '
-        }
-        return str
+        return this.items.join(' ')
     }
 
-    // Clear stack
     clear() {
         this.items = []
         this.count = 0
-        console.log('Stack cleared..')
         return this.items
     }
 }
 
 const stack = new Stack()
 
-$(document).ready(function(){
-    $("#stack").prepend(`<div class="row bg-primary push">${stack.push(100)[0]}</div>`);
-    $("#stack").prepend(`<div class="row bg-success push">${stack.push(200)[0]}</div>`);
-    $("#stack").prepend(`<div class="row bg-primary push">${stack.push(300)[0]}</div>`);
-    $("#stack").prepend(`<div class="row bg-success push">${stack.push(400)[0]}</div>`);
-});
+function showMessage(text, type) {
+    $("#message")
+        .removeClass("text-light text-warning text-info")
+        .addClass(type || "text-light")
+        .text(text)
+}
+
+$(document).ready(function () {
+    const $input = $("#dataInput")
+    let serial = 0
+
+    function clearPeek() {
+        $("#stack .push").removeClass("peeked")
+    }
+
+    function pushItem() {
+        const value = $input.val().trim()
+        if (value === "") {
+            showMessage("Enter a value before pushing.", "text-warning")
+            $input.focus()
+            return
+        }
+        stack.push(value)
+        clearPeek()
+        const color = serial % 2 === 0 ? "bg-primary" : "bg-success"
+        serial += 1
+        $("<div>")
+            .addClass("row push " + color)
+            .attr("title", value)
+            .text(value)
+            .prependTo("#stack")
+        $input.val("").focus()
+        showMessage(`Pushed ${value}. ${stack.size()} element(s) in stack.`, "text-info")
+    }
+
+    function popItem() {
+        const removed = stack.pop()
+        if (removed === undefined) {
+            showMessage("Stack is empty. Nothing to pop.", "text-warning")
+            return
+        }
+        clearPeek()
+        $("#stack .push").first().remove()
+        $("<div>")
+            .addClass("row pop text-bg-danger border border-light")
+            .attr("title", removed)
+            .text(removed)
+            .prependTo("#popped")
+        showMessage(`Popped ${removed}.`, "text-info")
+    }
+
+    function peekItem() {
+        const top = stack.peek()
+        if (top === undefined) {
+            showMessage("Stack is empty. Nothing to peek.", "text-warning")
+            return
+        }
+        clearPeek()
+        $("#stack .push").first().addClass("peeked")
+        showMessage(`Top element is ${top}.`, "text-info")
+    }
+
+    function clearStack() {
+        stack.clear()
+        $("#stack").empty()
+        $("#popped").empty()
+        $input.val("")
+        showMessage("Stack cleared.", "text-info")
+    }
+
+    $("#pushBtn").on("click", pushItem)
+    $("#popBtn").on("click", popItem)
+    $("#peekBtn").on("click", peekItem)
+    $("#clearBtn").on("click", clearStack)
+    $input.on("keydown", function (e) {
+        if (e.key === "Enter") pushItem()
+    })
+})
