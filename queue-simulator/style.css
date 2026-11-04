@@ -1,14 +1,14 @@
 body{
     background-color: #495579;
 }
-#stack, #popped{
+#queue, #dequeued{
     display: flex;
     flex-direction: column;
     align-items: center;
     min-height: 300px;
 }
-#popped{
-    justify-content: flex-end;
+#dequeued{
+    justify-content: flex-start;
 }
 .push, .pop{
     width: 50px;
@@ -24,6 +24,19 @@ body{
 .peeked{
     outline: 3px solid #ffc107;
     box-shadow: 0 0 12px 3px #ffc107;
+}
+.end-label{
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+    letter-spacing: 1px;
+    padding: 4px 0;
+}
+.front-label{
+    color: #ffc107;
+}
+.rear-label{
+    color: #0dcaf0;
 }
 .bg-7B8FA1{
     background-color: #7B8FA1;
